@@ -97,17 +97,20 @@ func main() {
 	log.SetFlags(0)
 
 	// 打开 output.txt 文件，并设置为可写模式
-	file, err := os.Create(fmt.Sprintf("%v--%v.csv", name, eee))
+	txtl := fmt.Sprintf("%v---%v.txt", name, eee)
+	f, err := os.Create(txtl)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	defer file.Close()
+	defer f.Close()
 
-	// 创建CSV写入器
-	writer := csv.NewWriter(file)
-	defer writer.Flush()
+	// 设置输出为文件
+	log.SetOutput(f)
 
-	
+	// 进行日志输出
+	//log.Print("Hello, World!")
+	//log.Print("Hello, rld!")
+	//log.Print("Hello, ld!")
 
 	var name_k []string
 	for _, info := range result {
@@ -123,27 +126,84 @@ func main() {
 
 		//fmt.Println(info.Name, "宽度:", kuan)
 		uid := uuid(info.Name)
-		data := [][]string{
-			{"0", fmt.Sprintf("%v", zb_gid), fmt.Sprintf("%v", info.Number), fmt.Sprintf("https://space.bilibili.com/%v", uid)},
-		}
+		//kuan := 20 - utf8.RuneCountInString(info.Name)                 //宽度
+		//kua := 20 - utf8.RuneCountInString(strconv.FormatInt(uid, 10)) //宽度
+		//
+		//for k := 0; k < kuan; k++ { //名字宽度调节
+		//	name_k = append(name_k, "")
+		//}
+		//
+		//for kk := 0; kk < kua; kk++ { //UID宽度调节
+		//	uid_k = append(uid_k, "")
+		//}
+		//fmt.Printf(" 编号:%v 昵称：%v %vUID:%v %v抓取时间:%v\n", info.Number, info.Name, strings.Join(name_k, " "), uid, strings.Join(uid_k, " "), info.Time)
+		//fmt.Printf(" 编号:%v 昵称：%v %vUID:%v %v抓取时间:%v\n", info.Number, info.Name, strings.Join(name_k, " "), uid, strings.Join(uid_k, " "), info.Time)
 
-		fmt.Println(data)
+		//fmt.Printf("编号: %d%20s 昵称：%s%30s UID:%v%20s 抓取时间:%s%20s\n", info.Number, "", info.Name, "", uid, "", info.Time, "")
+		//log.Printf("编号: %d%20s 昵称：%s%30s UID:%v%20s 抓取时间:%s%20s\n", info.Number, "", info.Name, "", uid, "", info.Time, "")
+		//fmt.Printf("%-30s%-40s%-40s%-50s\n", fmt.Sprintf("编号: %v", info.Number), fmt.Sprintf("昵称: %v", info.Name), fmt.Sprintf("UID: %v", uid), fmt.Sprintf("抓取时间: %v", info.Time))
+		//log.Printf("%-30s%-40s%-40s%-50s\n", fmt.Sprintf("编号: %v", info.Number), fmt.Sprintf("昵称: %v", info.Name), fmt.Sprintf("UID: %v", uid), fmt.Sprintf("抓取时间: %v", info.Time))
 
-		for _, record := range data {
-			err := writer.Write(record)
-			if err != nil {
-				panic(err)
-			}
-		}
+		fmt.Printf("0,%v,%v,https://space.bilibili.com/%v\n", zb_gid, info.Number, uid)
+		log.Printf("0,%v,%v,https://space.bilibili.com/%v\n", zb_gid, info.Number, uid)
 
 	}
 
+	fmt.Printf("txt抓取结束,在当前目录下可查看录制文件(%v---%v.txt)\n", name, eee)
+	time.Sleep(time.Second * 1)
+	fmt.Printf("\n")
+	fmt.Printf("将txt转换成scv中...\n")
+
+	file, err := os.Open(fmt.Sprintf("%v", txtl))
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	// 创建CSV文件
+	csvFile, err := os.Create(fmt.Sprintf("%v---%v.csv", name, eee))
+	if err != nil {
+		panic(err)
+	}
+	defer csvFile.Close()
+
+	// 创建CSV写入器
+	writer := csv.NewWriter(csvFile)
+
+	// 读取txt文件的内容并逐行处理
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		// 通过指定的分隔符将每行内容分隔成字段
+		line := scanner.Text()
+
+		// 检测并删除引号
+		if strings.Contains(line, `"`) {
+			line = strings.ReplaceAll(line, `"`, "")
+		}
+
+		fields := strings.Split(line, ",")
+
+		// 将字段写入CSV文件
+		err := writer.Write(fields)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	// 检查文件读取和写入过程中是否有错误
+	if scanner.Err() != nil {
+		panic(scanner.Err())
+	}
+
+	// 刷新写入缓冲并检查错误
+	writer.Flush()
+	if err := writer.Error(); err != nil {
+		panic(err)
+	}
+	fmt.Printf("转换完成,txt和scv文件已生成在当前工作目录下(%v---%v.scv)", name, eee)
+
 	var p int
 	fmt.Printf("")
-	fmt.Printf("")
-	fmt.Printf("")
-	fmt.Printf("抓取结束,在当前目录下可查看录制文件(例:梨安不迷路---2023年07月16日 23.41.53.csv)")
-	fmt.Printf("要关闭当前的exe程序  csv才会显示出数据(不知道是什么猫饼...)")
 	fmt.Scan(&p)
 
 }
@@ -361,8 +421,6 @@ func id_iddd(ii int) (sale_time_begin string, name string, gid int64) {
 	sale_time_begin, err = jsonparser.GetString(bodyText, "data", "item", "properties", "sale_time_begin") //该装扮开售时间戳
 
 	gid, _ = jsonparser.GetInt(bodyText, "data", "suit_items", "space_bg", "[0]", "item_id") //该装扮开售时间戳
-
-	//fmt.Println("gid测试:", gid)
 
 	//fmt.Printf("%v\n", name)
 	//log.Printf("%v\n", name)
