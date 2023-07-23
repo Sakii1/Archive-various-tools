@@ -126,6 +126,12 @@ func main() {
 
 		//fmt.Println(info.Name, "宽度:", kuan)
 		uid := uuid(info.Name)
+
+		if uid == 0 {  //应要求...把改名或搜不到的x了
+			continue
+		}
+
+		
 		//kuan := 20 - utf8.RuneCountInString(info.Name)                 //宽度
 		//kua := 20 - utf8.RuneCountInString(strconv.FormatInt(uid, 10)) //宽度
 		//
