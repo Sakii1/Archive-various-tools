@@ -24,15 +24,16 @@ type Info struct {
 
 var m []Info
 
-// var and_for []string
-var num_off int64
+var str_off string
+
+//var num_off int64
 
 func main() {
 	//ii := 114103501
 	ii, _ := strconv.Atoi(fmt.Sprintf("%v", ReadLine(2)))
 	ms, _ := strconv.Atoi(fmt.Sprintf("%v", ReadLine(5)))
 
-	now_, name := id_iddd(ii)
+	now_, name, _ := id_iddd(ii)
 	now, _ := strconv.ParseInt(now_, 10, 64)
 	fmt.Printf("name:%v   开售时间:%v\n", name, now)
 
@@ -51,7 +52,7 @@ func main() {
 
 	fmt.Printf("间隔: %vms\n", ms)
 
-	tm := time.Unix(now, 0)
+	//tm := time.Unix(now, 0)
 
 	nowwww(now)
 
@@ -110,12 +111,7 @@ func main() {
 	//log.Print("Hello, World!")
 	//log.Print("Hello, rld!")
 	//log.Print("Hello, ld!")
-	fmt.Println(" ")
-	log.Println(" ")
-	fmt.Println("               装扮ID： ", ii, "           装扮昵称: ", name, "      开售时间: ", tm.Format("2006-01-02 15:04:05"))
-	log.Println("               装扮ID： ", ii, "           装扮昵称: ", name, "      开售时间: ", tm.Format("2006-01-02 15:04:05"))
-	fmt.Println(" ")
-	log.Println(" ")
+
 	var name_k []string
 	for _, info := range result {
 
@@ -130,6 +126,11 @@ func main() {
 
 		//fmt.Println(info.Name, "宽度:", kuan)
 		uid := uuid(info.Name)
+
+		if uid == 0 {
+			continue
+		}
+
 		//kuan := 20 - utf8.RuneCountInString(info.Name)                 //宽度
 		//kua := 20 - utf8.RuneCountInString(strconv.FormatInt(uid, 10)) //宽度
 		//
@@ -148,13 +149,66 @@ func main() {
 		fmt.Printf("%-30s%-40s%-40s%-50s\n", fmt.Sprintf("编号: %v", info.Number), fmt.Sprintf("昵称: %v", info.Name), fmt.Sprintf("UID: %v", uid), fmt.Sprintf("抓取时间: %v", info.Time))
 		log.Printf("%-30s%-40s%-40s%-50s\n", fmt.Sprintf("编号: %v", info.Number), fmt.Sprintf("昵称: %v", info.Name), fmt.Sprintf("UID: %v", uid), fmt.Sprintf("抓取时间: %v", info.Time))
 
+		//fmt.Printf("0,%v,%v,https://space.bilibili.com/%v\n", zb_gid, info.Number, uid)
+		//log.Printf("0,%v,%v,https://space.bilibili.com/%v\n", zb_gid, info.Number, uid)
+
 	}
+
+	fmt.Printf("txt抓取结束,在当前目录下可查看录制文件(%v---%v.txt)\n", name, eee)
+	//time.Sleep(time.Second * 1)
+	//fmt.Printf("\n")
+	//fmt.Printf("将txt转换成scv中...\n")
+	//
+	//file, err := os.Open(fmt.Sprintf("%v", txtl))
+	//if err != nil {
+	//	panic(err)
+	//}
+	//defer file.Close()
+	//
+	//// 创建CSV文件
+	//csvFile, err := os.Create(fmt.Sprintf("%v---%v.csv", name, eee))
+	//if err != nil {
+	//	panic(err)
+	//}
+	//defer csvFile.Close()
+	//
+	//// 创建CSV写入器
+	//writer := csv.NewWriter(csvFile)
+	//
+	//// 读取txt文件的内容并逐行处理
+	//scanner := bufio.NewScanner(file)
+	//for scanner.Scan() {
+	//	// 通过指定的分隔符将每行内容分隔成字段
+	//	line := scanner.Text()
+	//
+	//	// 检测并删除引号
+	//	if strings.Contains(line, `"`) {
+	//		line = strings.ReplaceAll(line, `"`, "")
+	//	}
+	//
+	//	fields := strings.Split(line, ",")
+	//
+	//	// 将字段写入CSV文件
+	//	err := writer.Write(fields)
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//}
+	//
+	//// 检查文件读取和写入过程中是否有错误
+	//if scanner.Err() != nil {
+	//	panic(scanner.Err())
+	//}
+	//
+	//// 刷新写入缓冲并检查错误
+	//writer.Flush()
+	//if err := writer.Error(); err != nil {
+	//	panic(err)
+	//}
+	//fmt.Printf("转换完成,txt和scv文件已生成在当前工作目录下(%v---%v.scv)", name, eee)
 
 	var p int
 	fmt.Printf("")
-	fmt.Printf("")
-	fmt.Printf("")
-	fmt.Printf("抓取结束,在当前目录下可查看录制文件(例:梨安不迷路---2023年07月16日 23.41.53.txt)")
 	fmt.Scan(&p)
 
 }
@@ -166,6 +220,17 @@ func main() {
 //}
 
 func rank(ii int, ms int) {
+
+	//infoo := Info{
+	//	Number: int(10000),
+	//	Name:   "test",
+	//	Time:   time.Now().Format("2006-01-02 15:04:05.000"),
+	//}
+	//
+	//fmt.Println(infoo)
+
+	//fmt.Println(name, ":", numberr, "---", tioem)
+	//m = append(m, infoo)
 
 	for {
 
@@ -219,10 +284,8 @@ func rank(ii int, ms int) {
 		count := strings.Count(string(bodyText), "nickname")
 		tioem := time.Now().Format("2006-01-02 15:04:05.000")
 
-		numberr2, _ := jsonparser.GetInt(bodyText, "data", "rank", fmt.Sprintf("[%v]", 0), "number")
-
-		if num_off == numberr2 {
-			//fmt.Println("榜单无变动 跳过存储处理    <-")
+		if str_off == string(bodyText) {
+			fmt.Println("榜单无变动 跳过存储处理    <-")
 			for i := 0; i < count; i++ {
 				name, _ := jsonparser.GetString(bodyText, "data", "rank", fmt.Sprintf("[%v]", i), "nickname")
 				numberr, _ := jsonparser.GetInt(bodyText, "data", "rank", fmt.Sprintf("[%v]", i), "number")
@@ -242,8 +305,8 @@ func rank(ii int, ms int) {
 			}
 
 		} else {
-			//fmt.Println("榜单有变动 进行存储    <-")
-			num_off = numberr2
+			fmt.Println("榜单有变动 进行存储    <-")
+			str_off = string(bodyText)
 			for i := 0; i < count; i++ {
 				name, _ := jsonparser.GetString(bodyText, "data", "rank", fmt.Sprintf("[%v]", i), "nickname")
 				numberr, _ := jsonparser.GetInt(bodyText, "data", "rank", fmt.Sprintf("[%v]", i), "number")
@@ -258,6 +321,7 @@ func rank(ii int, ms int) {
 
 				//fmt.Println(name, ":", numberr, "---", tioem)
 				m = append(m, info)
+				//m = append(m, infoo)
 				//m = append(m, strconv.FormatInt(numberr, 10)+"**"+name+tioem)
 				//fmt.Println(numberr)
 				if i == count-1 {
@@ -342,7 +406,7 @@ func nowwww(now int64) { //服务器时间戳
 
 } //服务器时间戳
 
-func id_iddd(ii int) (sale_time_begin string, name string) {
+func id_iddd(ii int) (sale_time_begin string, name string, gid int64) {
 	client := &http.Client{}
 	var data = strings.NewReader(`
 `)
@@ -371,9 +435,11 @@ func id_iddd(ii int) (sale_time_begin string, name string) {
 
 	sale_time_begin, err = jsonparser.GetString(bodyText, "data", "item", "properties", "sale_time_begin") //该装扮开售时间戳
 
+	gid, _ = jsonparser.GetInt(bodyText, "data", "suit_items", "space_bg", "[0]", "item_id") //该装扮开售时间戳
+
 	//fmt.Printf("%v\n", name)
 	//log.Printf("%v\n", name)
-	return sale_time_begin, nnname
+	return sale_time_begin, nnname, gid
 }
 
 func uuid(name string) int64 {
