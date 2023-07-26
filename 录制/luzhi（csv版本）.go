@@ -25,8 +25,9 @@ type Info struct {
 
 var m []Info
 
-// var and_for []string
-var num_off int64
+var str_off string
+
+//var num_off int64
 
 func main() {
 	//ii := 114103501
@@ -127,11 +128,10 @@ func main() {
 		//fmt.Println(info.Name, "宽度:", kuan)
 		uid := uuid(info.Name)
 
-		if uid == 0 {  //应要求...把改名或搜不到的x了
+		if uid == 0 {
 			continue
 		}
 
-		
 		//kuan := 20 - utf8.RuneCountInString(info.Name)                 //宽度
 		//kua := 20 - utf8.RuneCountInString(strconv.FormatInt(uid, 10)) //宽度
 		//
@@ -222,6 +222,17 @@ func main() {
 
 func rank(ii int, ms int) {
 
+	//infoo := Info{
+	//	Number: int(10000),
+	//	Name:   "test",
+	//	Time:   time.Now().Format("2006-01-02 15:04:05.000"),
+	//}
+	//
+	//fmt.Println(infoo)
+	//
+	////fmt.Println(name, ":", numberr, "---", tioem)
+	//m = append(m, infoo)
+
 	for {
 
 		end := ReadLine(4)
@@ -274,10 +285,8 @@ func rank(ii int, ms int) {
 		count := strings.Count(string(bodyText), "nickname")
 		tioem := time.Now().Format("2006-01-02 15:04:05.000")
 
-		numberr2, _ := jsonparser.GetInt(bodyText, "data", "rank", fmt.Sprintf("[%v]", 0), "number")
-
-		if num_off == numberr2 {
-			//fmt.Println("榜单无变动 跳过存储处理    <-")
+		if str_off == string(bodyText) {
+			fmt.Println("榜单无变动 跳过存储处理    <-")
 			for i := 0; i < count; i++ {
 				name, _ := jsonparser.GetString(bodyText, "data", "rank", fmt.Sprintf("[%v]", i), "nickname")
 				numberr, _ := jsonparser.GetInt(bodyText, "data", "rank", fmt.Sprintf("[%v]", i), "number")
@@ -297,8 +306,8 @@ func rank(ii int, ms int) {
 			}
 
 		} else {
-			//fmt.Println("榜单有变动 进行存储    <-")
-			num_off = numberr2
+			fmt.Println("榜单有变动 进行存储    <-")
+			str_off = string(bodyText)
 			for i := 0; i < count; i++ {
 				name, _ := jsonparser.GetString(bodyText, "data", "rank", fmt.Sprintf("[%v]", i), "nickname")
 				numberr, _ := jsonparser.GetInt(bodyText, "data", "rank", fmt.Sprintf("[%v]", i), "number")
