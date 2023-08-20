@@ -9,6 +9,7 @@ import (
 	"os"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -73,17 +74,29 @@ func main() {
 	for _, item := range items {
 		rraw, _ := strconv.Atoi(item.Raw)
 
+		ccpf, xg, stock := cpf(item.Zbid)
+		var minNum int64
+
+		if stock < item.Sheng {
+			minNum = stock
+		} else {
+			minNum = item.Sheng
+		}
+
 		fmt.Printf("  名称: %s\n", item.Name)
 		fmt.Printf("  售价: %d\n", rraw/100)
-		fmt.Printf("  数量: %v/%v\n", item.Sheng, item.Quan)
+		fmt.Printf("  数量: %v/%v \n", minNum, item.Quan)
+		fmt.Printf("  限购：%v\n", xg)
 		fmt.Printf("  装扮id: %d\n", item.Zbid)
+		fmt.Printf("  出品方: %v\n", ccpf)
 
 		log.Printf("  名称: %s\n", item.Name)
 		log.Printf("  售价: %d\n", rraw/100)
-		log.Printf("  数量: %v / %v\n", item.Sheng, item.Quan)
+		log.Printf("  数量: %v/%v \n", minNum, item.Quan)
+		log.Printf("  限购：%v\n", xg)
 		log.Printf("  装扮id: %d\n", item.Zbid)
+		log.Printf("  出品方: %v\n", ccpf)
 
-		cpf(item.Zbid)
 		//fmt.Printf("  直达链接: https://www.bilibili.com/h5/mall/suit/detail?id=%v\n", item.Zbid)
 		yuyue(item.Zbid)
 		fmt.Printf("  %s\n", item.Bilitime)
@@ -206,7 +219,7 @@ func yuyue(itid int) {
 
 }
 
-func cpf(iidd int) { //出品方
+func cpf(iidd int) (s, ss string, sss int64) { //出品方
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", fmt.Sprintf("https://api.bilibili.com/x/garb/mall/item/suit/v2?item_id=%v&part=suit", iidd), nil)
 	if err != nil {
@@ -237,7 +250,17 @@ func cpf(iidd int) { //出品方
 	}
 	//fmt.Printf("%s\n", bodyText)
 	sb, _ := jsonparser.GetString([]byte(string(bodyText)), "data", "fan_user", "nickname")
-	fmt.Println("  出品方：", sb)
-	log.Println("  出品方：", sb)
+	xiangou, _ := jsonparser.GetString(bodyText, "data", "item", "properties", "sale_buy_num_limit") //限购检测
+
+	var limit int64
+	if strings.Contains(string(bodyText), "item_stock_surplus") {
+		lim, _ := jsonparser.GetString(bodyText, "data", "item", "properties", "item_stock_surplus")
+		limit, _ = strconv.ParseInt(lim, 10, 64)
+
+	} else {
+		limit = 99999
+	} //实际售卖量
+
+	return sb, xiangou, limit
 
 }
