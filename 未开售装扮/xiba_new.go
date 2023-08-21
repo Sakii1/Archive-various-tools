@@ -77,7 +77,9 @@ func main() {
 		ccpf, xg, stock := cpf(item.Zbid)
 		var minNum int64
 
-		if stock < item.Sheng {
+		//fmt.Println(stock)
+
+		if stock >= item.Sheng {
 			minNum = stock
 		} else {
 			minNum = item.Sheng
